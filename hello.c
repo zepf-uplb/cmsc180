@@ -2,6 +2,7 @@
 #include <mpi.h>
 #include <time.h>
 #include <stdlib.h>
+#include <assert.h>
 
 int **createMatrix(int n);
 int printMatrix(int **M, int n);
@@ -11,10 +12,11 @@ int printArray(int *A, int n);
 int freeMatrix(int **M, int n);
 int freeSubMatrix(int ***m, int t, int n);
 int *matrixToArray(int **M, int n);
+int *computeColumnSums(int *a, int n, int t);
 
 int main(int argc, char** argv)
 {
-    int myrank, nprocs, **M, ***m, *A, n, t, i;
+    int myrank, nprocs, **M, ***m, *A, *a, n, t, i, divs, *sums, **SUMS;
 
     n = 8, t = 2;
     MPI_Init(NULL, NULL);
@@ -26,26 +28,41 @@ int main(int argc, char** argv)
     //create matrix
     if(myrank == 0){
     	M = createMatrix(n);  
-    }
-     
-    printf("Matrix:\n");
-    printMatrix(M, n);
+
+    	printf("Matrix:\n");
+    	printMatrix(M, n);
     
-    A = matrixToArray(M, n);
+    	A = matrixToArray(M, n);
 
-    printf("Array:\n");
-    printArray(A, n);
-    /*
-    //divide to submatrix
-    m = divideMatrix(M, t, n);
-    printf("Submatrices:\n");
-    printSubmatrix(m, t, n);*/
+    	printf("Array:\n");
+    	printArray(A, n);
 
+    	freeMatrix(M, n);
+    }
+	     
+    divs = n/t;
 
-    freeMatrix(M, n);
-    //freeSubMatrix(m, t, n);
+	if(n > divs*t){
+		divs++;
+	}
 
+    a = (int*)malloc(sizeof(int)*(n*divs));
+    assert(a != NULL);
 
+    MPI_Scatter(A, (n*divs), MPI_INT, a, (n*divs), MPI_INT, 0, MPI_COMM_WORLD);
+
+    printf("I am processor %d.\n", myrank);
+    for(i = 0; i < (n*divs); i++){
+    	printf("%d ", a[i]);
+    }
+    printf("\n");
+
+    /*sums = computeColumnSums(a, n, t);
+
+    SUMS = (int**)malloc(sizeof(int*)*nprocs);
+    assert(SUMS != NULL);
+
+    MPI_Allgather()*/
 
     MPI_Finalize();
 
@@ -181,9 +198,35 @@ int *matrixToArray(int **M, int n)
 
 	for(i = 0, k = 0; i < n; i++){
 		for(j = 0; j < n; j++, k++){
-			A[k] = M[i][j];
+			A[k] = M[j][i];
 		}
 	}
 
 	return A;
+}
+
+int *computeColumnSums(int *a, int n, int t)
+{
+	int *sums, divs, i, j;
+
+	divs = n/t;
+
+	if(n > divs*t){
+		divs++;
+	}
+
+	sums = (int*)malloc(sizeof(int)*divs);
+
+	for(i = 0; i < divs; i++){
+		sums[i] = 0;
+	}
+
+	for(i = 0, j = 0; i < (n*divs); i++){
+		sums[j] += a[i];
+		if(i % n == 0){
+			j++;
+		}
+	}
+
+	return sums;
 }
