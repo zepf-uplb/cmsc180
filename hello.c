@@ -16,7 +16,7 @@ int *computeColumnSums(int *a, int n, int t);
 
 int main(int argc, char** argv)
 {
-    int myrank, nprocs, **M, ***m, *A, *a, n, t, i, divs, *sums, **SUMS;
+    int myrank, nprocs, **M, ***m, *A, *a, n, t, i, j, divs, *sums, **SUMS;
 
     n = 8, t = 2;
     MPI_Init(NULL, NULL);
@@ -34,8 +34,8 @@ int main(int argc, char** argv)
     
     	A = matrixToArray(M, n);
 
-    	printf("Array:\n");
-    	printArray(A, n);
+    	//printf("Array:\n");
+    	//printArray(A, n);
 
     	freeMatrix(M, n);
     }
@@ -51,18 +51,30 @@ int main(int argc, char** argv)
 
     MPI_Scatter(A, (n*divs), MPI_INT, a, (n*divs), MPI_INT, 0, MPI_COMM_WORLD);
 
-    printf("I am processor %d.\n", myrank);
+    /*printf("I am processor %d.\n", myrank);
     for(i = 0; i < (n*divs); i++){
     	printf("%d ", a[i]);
     }
-    printf("\n");
+    printf("\n");*/
 
-    /*sums = computeColumnSums(a, n, t);
+    sums = computeColumnSums(a, n, t);
 
     SUMS = (int**)malloc(sizeof(int*)*nprocs);
     assert(SUMS != NULL);
 
-    MPI_Allgather()*/
+    MPI_Allgather(&sums, divs, MPI_INT, *SUMS, divs, MPI_INT, MPI_COMM_WORLD);
+
+    if(myrank == 0){
+    	printf("\n");
+    	for(i = 0; i < t; i++){
+	    	for(j = 0; j < divs; j++){
+	    		printf("%d ", SUMS[i][j]);
+	    	}
+	    }
+	    printf("\n");
+	    free(A);
+    }
+	    
 
     MPI_Finalize();
 
