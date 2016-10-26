@@ -7,36 +7,45 @@ int **createMatrix(int n);
 int printMatrix(int **M, int n);
 int ***divideMatrix(int **M, int t, int n);
 int printSubmatrix(int ***m, int t, int n);
+int printArray(int *A, int n);
 int freeMatrix(int **M, int n);
 int freeSubMatrix(int ***m, int t, int n);
+int *matrixToArray(int **M, int n);
 
 int main(int argc, char** argv)
 {
-    int myrank, nprocs, **M, ***m, n, t, i;
+    int myrank, nprocs, **M, ***m, *A, n, t, i;
 
     n = 8, t = 2;
-    MPI_Init(&argc, &argv);
+    MPI_Init(NULL, NULL);
     MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
     MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
     srand(time(NULL));
 
 
     //create matrix
-    M = createMatrix(n);    
+    if(myrank == 0){
+    	M = createMatrix(n);  
+    }
+     
     printf("Matrix:\n");
     printMatrix(M, n);
     
-    
+    A = matrixToArray(M, n);
+
+    printf("Array:\n");
+    printArray(A, n);
+    /*
     //divide to submatrix
     m = divideMatrix(M, t, n);
     printf("Submatrices:\n");
-    printSubmatrix(m, t, n);
-    //start time
+    printSubmatrix(m, t, n);*/
+
 
     freeMatrix(M, n);
-    freeSubMatrix(m, t, n);
+    //freeSubMatrix(m, t, n);
 
-    //printf("Hello from processor %d of %d\n", myrank, nprocs);
+
 
     MPI_Finalize();
 
@@ -126,6 +135,17 @@ int printSubmatrix(int ***m, int t, int n)
 	return 1;
 }
 
+int printArray(int *A, int n)
+{
+	int i;
+	for(i = 0; i < n*n; i++){
+		printf("%d ", A[i]);
+	}
+	printf("\n");
+
+	return 1;
+}
+
 int freeMatrix(int **M, int n)
 {
 	int i;
@@ -152,4 +172,18 @@ int freeSubMatrix(int ***m, int t, int n)
 	free(m);
 
 	return 1;
+}
+
+int *matrixToArray(int **M, int n)
+{
+	int i, j, *A;
+	A = (int*)malloc(sizeof(int)*(n*n));
+
+	for(i = 0; i < n; i++){
+		for(j = 0; j < n; j++){
+			A[i+j] = M[i][j];
+		}
+	}
+
+	return A;
 }
