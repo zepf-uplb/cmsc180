@@ -58,11 +58,11 @@ int main(int argc, char** argv)
     printf("\n");*/
     sums = computeColumnSums(a, n, t);
 
-    printf("I am processor %d. :", myrank);
+    /*printf("I am processor %d. :", myrank);
     for(i = 0; i < divs; i++){
     	printf("%d ", sums[i]);
     }	
-    printf("\n");
+    printf("\n");*/
 
     SUMS = (int*)malloc(sizeof(int)*n);
     assert(SUMS != NULL);
@@ -75,8 +75,10 @@ int main(int argc, char** argv)
 	    	printf("%d ", SUMS[i]);
 	    }
 	    printf("\n");
-	    //free(A);
+	    free(A);
     }
+    free(sums);
+    free(SUMS);
 	    
 
     MPI_Finalize();
