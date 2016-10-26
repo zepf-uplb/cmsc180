@@ -176,12 +176,12 @@ int freeSubMatrix(int ***m, int t, int n)
 
 int *matrixToArray(int **M, int n)
 {
-	int i, j, *A;
+	int i, j, k, *A;
 	A = (int*)malloc(sizeof(int)*(n*n));
 
-	for(i = 0; i < n; i++){
-		for(j = 0; j < n; j++){
-			A[i+j] = M[i][j];
+	for(i = 0, k = 0; i < n; i++){
+		for(j = 0; j < n; j++, k++){
+			A[k] = M[i][j];
 		}
 	}
 
