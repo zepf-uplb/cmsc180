@@ -240,12 +240,13 @@ int *computeColumnSums(int *a, int n, int t)
 		sums[i] = 0;
 	}
 
-	for(i = 0, j = 0, k = 1; i < (n*divs)+1; i++, k++){
-		printf("%d ", a[i]);
+	for(i = 0, j = 0, k = 1; i < (n*divs); i++, k++){
+		//printf("a-%d ", a[i]);
 		sums[j] += a[i];
+		//printf("b-%d ", sums[j]);
 		if(k == n){
 			j++;
-			k = 1;
+			k = 0;
 		}
 	}
 	printf("\n");
