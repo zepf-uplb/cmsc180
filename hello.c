@@ -18,7 +18,7 @@ int main(int argc, char** argv)
 {
     int myrank, nprocs, **M, ***m, *A, *a, n, t, i, j, divs, *sums, *SUMS;
 
-    n = 8, t = 2;
+    n = 8, t = 4;
     MPI_Init(NULL, NULL);
     MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
     MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
@@ -56,13 +56,15 @@ int main(int argc, char** argv)
     	printf("%d ", a[i]);
     }
     printf("\n");*/
-
+    if(myrank == 0){
     sums = computeColumnSums(a, n, t);
 
-    printf("I am processor %d.\n", myrank);
+    printf("I am processor %d. :", myrank);
     for(i = 0; i < divs; i++){
     	printf("%d ", sums[i]);
+    }	
     }
+
 
     //SUMS = (int*)malloc(sizeof(int)*n);
     //assert(SUMS != NULL);
@@ -224,7 +226,7 @@ int *matrixToArray(int **M, int n)
 
 int *computeColumnSums(int *a, int n, int t)
 {
-	int *sums, divs, i, j;
+	int *sums, divs, i, j, k;
 
 	divs = n/t;
 
@@ -238,12 +240,15 @@ int *computeColumnSums(int *a, int n, int t)
 		sums[i] = 0;
 	}
 
-	for(i = 0, j = 0; i < (n*divs); i++){
+	for(i = 0, j = 0, k = 1; i < (n*divs)+1; i++, k++){
+		printf("%d ", a[i]);
 		sums[j] += a[i];
-		if(i % n == 0){
+		if(k == n){
 			j++;
+			k = 1;
 		}
 	}
+	printf("\n");
 
 	return sums;
 }
