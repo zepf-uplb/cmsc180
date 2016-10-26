@@ -35,12 +35,13 @@ float compute_avg(float *array, int num_elements) {
 }
 
 int main(int argc, char** argv) {
-  if (argc != 2) {
+  /*if (argc != 2) {
     fprintf(stderr, "Usage: avg num_elements_per_proc\n");
     exit(1);
-  }
+  }*/
 
-  int num_elements_per_proc = atoi(argv[1]);
+  //int num_elements_per_proc = atoi(argv[1]);
+  int num_elements_per_proc = 5;
   // Seed the random number generator to get different results each time
   srand(time(NULL));
 
