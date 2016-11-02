@@ -53,7 +53,8 @@ int main(int argc, char** argv)
 	displs = (int *)malloc(sizeof(int)*t); 
     scounts = (int *)malloc(sizeof(int)*t); 
 
-    for (i = 0, stride = n*2; i < n%t; i++){ 
+    i = 0;
+    for (stride = n*2; i < n%t; i++){ 
         displs[i] = i*stride; 
         scounts[i] = n*2; 
     }
@@ -63,6 +64,10 @@ int main(int argc, char** argv)
     	scounts[i] = n;
     }
 
+    for(i = 0; i < t; i++){
+    	printf("displs[%d] = %d, scounts[%d] = %d\n", i, displs[i], i, scounts[i]);
+    }
+
     a = (int*)malloc(sizeof(int)*(n*a_size));
     assert(a != NULL);
 
@@ -70,10 +75,12 @@ int main(int argc, char** argv)
     MPI_Scatterv(A, scounts, displs, MPI_INT, a, (n*a_size), MPI_INT, 0, MPI_COMM_WORLD);
 
 
+    if(myrank == 0){
+    	printf("I am processor %d.\n", myrank);
+    	printArray(a, a_size);
+    	printf("\n");   	
+    }
 
-    printf("I am processor %d.\n", myrank);
-    printArray(a, a_size);
-    printf("\n");
     //sums = computeColumnSums(a, n, t);
 
     /*printf("I am processor %d. :", myrank);
