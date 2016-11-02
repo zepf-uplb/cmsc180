@@ -18,7 +18,7 @@ int main(int argc, char** argv)
 {
     int myrank, nprocs, **M, ***m, *A, *a, n, t, i, j, divs, *sums, *SUMS;
 
-    n = 8, t = 4;
+    n = 10, t = 3;
     MPI_Init(NULL, NULL);
     MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
     MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
@@ -120,20 +120,22 @@ int ***divideMatrix(int **M, int t, int n)
 {
 	int ***m, i, j, k, divs;
 
-	m = (int***)malloc(sizeof(int**)*t);
-
-	for(i = 0; i < t; i++){
-		m[i] = (int**)malloc(sizeof(int*)*n);
-		for(j = 0; j < n; j++){
-			m[i][j] = (int*)malloc(sizeof(int)*(n/t));
-		}
-	}
-
 	divs = n/t;
 
 	if(n > divs*t){
 		divs++;
 	}
+
+	m = (int***)malloc(sizeof(int**)*t);
+
+	for(i = 0; i < t; i++){
+		m[i] = (int**)malloc(sizeof(int*)*n);
+		for(j = 0; j < n; j++){
+			m[i][j] = (int*)malloc(sizeof(int)*(divs));
+		}
+	}
+
+	
 
 	for(k = 0; k < t; k++){
 		for(i = 0; i < n; i++){
