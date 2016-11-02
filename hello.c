@@ -54,13 +54,19 @@ int main(int argc, char** argv)
     scounts = (int *)malloc(sizeof(int)*t); 
 
     i = 0;
+    displs[0] = 0;
     for (stride = n*2; i < n%t; i++){ 
         displs[i] = i*stride; 
         scounts[i] = n*2; 
     }
 
     for(;i < t; i++){
-    	displs[i] = n + displs[i-1]; 
+    	if(i != 0){
+    		displs[i] = n + displs[i-1]; 
+    	}
+    	else{
+    		displs[i] = 0;
+    	}	
     	scounts[i] = n;
     }
 
@@ -77,7 +83,9 @@ int main(int argc, char** argv)
 
     if(myrank == 0){
     	printf("I am processor %d.\n", myrank);
-    	printArray(a, a_size);
+    	for(i = 0; i < a_size; i++){
+    	printf("%d ", sums[i]);
+    	}	
     	printf("\n");   	
     }
 
