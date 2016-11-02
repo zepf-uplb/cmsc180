@@ -16,9 +16,10 @@ int *computeColumnSums(int *a, int n, int t);
 
 int main(int argc, char** argv)
 {
-    int myrank, nprocs, **M, ***m, *A, *a, n, t, i, j, divs, *sums, *SUMS;
+    int myrank, nprocs, **M, ***m, *A, *a, n, t, i, j, divs, a_size, *sums, *SUMS, *displs, *scounts;
+    int stride;
 
-    n = 10, t = 3;
+    n = 8, t = 4;
     MPI_Init(NULL, NULL);
     MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
     MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
@@ -43,13 +44,30 @@ int main(int argc, char** argv)
     divs = n/t;
 
 	if(n > divs*t){
-		divs++;
+		a_size = divs+1;
+	}
+	else{
+		a_size = divs;
 	}
 
-    a = (int*)malloc(sizeof(int)*(n*divs));
+	displs = (int *)malloc(sizeof(int)*t); 
+    scounts = (int *)malloc(sizeof(int)*t); 
+
+    for (i = 0, stride = n*2; i < n%t; i++){ 
+        displs[i] = i*stride; 
+        scounts[i] = n*2; 
+    }
+
+    for(;i < t; i++){
+    	displs[i] = n + displs[i-1]; 
+    	scounts[i] = n;
+    }
+
+    a = (int*)malloc(sizeof(int)*(n*a_size));
     assert(a != NULL);
 
-    MPI_Scatter(A, (n*divs), MPI_INT, a, (n*divs), MPI_INT, 0, MPI_COMM_WORLD);
+    //MPI_Scatter(A, (n*divs), MPI_INT, a, (n*divs), MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Scatterv(A, scounts, displs, MPI_INT, a, (n*a_size), MPI_INT, 0, MPI_COMM_WORLD);
 
     /*printf("I am processor %d.\n", myrank);
     for(i = 0; i < (n*divs); i++){
@@ -67,7 +85,8 @@ int main(int argc, char** argv)
     SUMS = (int*)malloc(sizeof(int)*n);
     assert(SUMS != NULL);
 
-    MPI_Allgather(sums, divs, MPI_INT, SUMS, divs, MPI_INT, MPI_COMM_WORLD);
+    //MPI_Allgather(sums, divs, MPI_INT, SUMS, divs, MPI_INT, MPI_COMM_WORLD);
+    MPI_Allgatherv(sums, a_size, MPI_INT, SUMS, scounts, displs, MPI_INT, MPI_COMM_WORLD);
 
     if(myrank == 0){
     	printf("\n");
@@ -116,7 +135,7 @@ int printMatrix(int **M, int n)
 	return 1;
 }
 
-int ***divideMatrix(int **M, int t, int n)
+/*int ***divideMatrix(int **M, int t, int n)
 {
 	int ***m, i, j, k, divs;
 
@@ -146,7 +165,7 @@ int ***divideMatrix(int **M, int t, int n)
 	}
 
 	return m;
-}
+}*/
 
 int printSubmatrix(int ***m, int t, int n)
 {
@@ -226,11 +245,13 @@ int *matrixToArray(int **M, int n)
 
 int *computeColumnSums(int *a, int n, int t)
 {
-	int *sums, divs, i, j, k;
+	int *sums, divs, i, j, k, size;
+
+	size = sizeof(a) / sizeof(int);
 
 	divs = n/t;
 
-	if(n > divs*t){
+	if(a[size-1] != 0){
 		divs++;
 	}
 
@@ -247,7 +268,6 @@ int *computeColumnSums(int *a, int n, int t)
 			k = 0;
 		}
 	}
-	printf("\n");
 
 	return sums;
 }
