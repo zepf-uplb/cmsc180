@@ -76,7 +76,7 @@ int main(int argc, char** argv)
     MPI_Scatterv(A, scounts, displs, MPI_INT, a, (n*a_size), MPI_INT, 0, MPI_COMM_WORLD);
 
 
-    if(myrank == 0){
+    if(myrank == 1){
     	printf("I am processor %d.\n", myrank);
 
     	for(i = 0; i < t; i++){
@@ -92,12 +92,12 @@ int main(int argc, char** argv)
 
     sums = computeColumnSums(a, scounts, n, myrank);
 
-    /*if(myrank == 0){
+    if(myrank == 1){
 	    for(i = 0; i < scounts[myrank] / n; i++){
 	    	printf("%d ", sums[i]);
 	    }    	
 	    printf("\n");   
-    }*/
+    }
 
 
     /*printf("I am processor %d. :", myrank);
@@ -106,7 +106,7 @@ int main(int argc, char** argv)
     }	
     printf("\n");*/
 
-    SUMS = (int*)malloc(sizeof(int)*n);
+    /*SUMS = (int*)malloc(sizeof(int)*n);
     assert(SUMS != NULL);
 
     //MPI_Allgather(sums, divs, MPI_INT, SUMS, divs, MPI_INT, MPI_COMM_WORLD);
@@ -119,7 +119,7 @@ int main(int argc, char** argv)
 	    }
 	    printf("\n");
 	    free(A);
-    }
+    }*/
     free(displs);
     free(scounts);
     free(sums);
