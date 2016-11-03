@@ -69,7 +69,8 @@ int main(int argc, char** argv)
     		displs[i] = 0;
     	}	
     	scounts[i] = n*divs;
-    }   
+    }  
+
     i = 0;
     displs_r[0] = 0;
     rcounts[0] = 0;
@@ -77,8 +78,17 @@ int main(int argc, char** argv)
     for(stride = (scounts[0]/n); i < n%t; i++){
     	displs_r[i] = i*stride;
     	rcounts[i] = stride;
-
     }
+
+    for(; i < t; i++){
+    	if(i != 0){
+    		displs_r[i] = rcounts[i-1] + displs_r[i-1]; 
+    	}
+    	else{
+    		displs_r[i] = 0;
+    	}	
+    	rcounts[i] = (scounts[i]/n);
+    } 
 
     a = (int*)malloc(sizeof(int)*(n*a_size));
     assert(a != NULL);
