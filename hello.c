@@ -92,12 +92,12 @@ int main(int argc, char** argv)
 
     sums = computeColumnSums(a, scounts, n, myrank);
 
-    if(myrank == 0){
+    /*if(myrank == 0){
 	    for(i = 0; i < scounts[myrank] / n; i++){
 	    	printf("%d ", sums[i]);
 	    }    	
 	    printf("\n");   
-    }
+    }*/
 
 
     /*printf("I am processor %d. :", myrank);
@@ -106,12 +106,12 @@ int main(int argc, char** argv)
     }	
     printf("\n");*/
 
-   /* SUMS = (int*)malloc(sizeof(int)*n);
+    SUMS = (int*)malloc(sizeof(int)*n);
     assert(SUMS != NULL);
 
     //MPI_Allgather(sums, divs, MPI_INT, SUMS, divs, MPI_INT, MPI_COMM_WORLD);
     MPI_Allgatherv(sums, a_size, MPI_INT, SUMS, scounts, displs, MPI_INT, MPI_COMM_WORLD);
-
+	
     if(myrank == 0){
     	printf("\n");
     	for(i = 0; i < n; i++){
@@ -120,8 +120,10 @@ int main(int argc, char** argv)
 	    printf("\n");
 	    free(A);
     }
+    free(displs);
+    free(scounts);
     free(sums);
-    free(SUMS);*/
+    free(SUMS);
 	    
 
     MPI_Finalize();
