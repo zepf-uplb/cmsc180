@@ -136,7 +136,7 @@ int main(int argc, char** argv)
     assert(SUMS != NULL);
 
     //MPI_Allgather(sums, divs, MPI_INT, SUMS, divs, MPI_INT, MPI_COMM_WORLD);
-    MPI_Allgatherv(sums, (scounts[myrank]/n), MPI_INT, SUMS, rcounts, displs_r, MPI_INT, MPI_COMM_WORLD);
+    MPI_Gatherv(sums, (scounts[myrank]/n), MPI_INT, SUMS, rcounts, displs_r, MPI_INT, 0, MPI_COMM_WORLD);
 	
     if(myrank == 0){
     	printf("\n");
@@ -166,7 +166,7 @@ int **createMatrix(int n)
 	for(i = 0; i < n; i++){
 		M[i] = (int*)malloc(sizeof(int)*n);
 		for(j = 0; j < n; j++){			
-			M[i][j] = (rand() % 9)+1;
+			M[i][j] = (rand() % 5)+1;
 		}
 	}	
 
