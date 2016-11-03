@@ -35,9 +35,6 @@ int main(int argc, char** argv)
     
     	A = matrixToArray(M, n);
 
-    	//printf("Array:\n");
-    	//printArray(A, n);
-
     	freeMatrix(M, n);
     }
 	     
@@ -55,9 +52,10 @@ int main(int argc, char** argv)
 
     i = 0;
     displs[0] = 0;
-    for (stride = n*2; i < n%t; i++){ 
+
+    for (stride = n + (n*divs); i < n%t; i++){ 
         displs[i] = i*stride; 
-        scounts[i] = n*2; 
+        scounts[i] = n + (n*divs); 
     }
 
     for(;i < t; i++){
@@ -67,12 +65,8 @@ int main(int argc, char** argv)
     	else{
     		displs[i] = 0;
     	}	
-    	scounts[i] = n;
-    }
-
-    for(i = 0; i < t; i++){
-    	printf("displs[%d] = %d, scounts[%d] = %d\n", i, displs[i], i, scounts[i]);
-    }
+    	scounts[i] = n*divs;
+    }   
 
     a = (int*)malloc(sizeof(int)*(n*a_size));
     assert(a != NULL);
@@ -83,8 +77,14 @@ int main(int argc, char** argv)
 
     if(myrank == 0){
     	printf("I am processor %d.\n", myrank);
-    	for(i = 0; i < a_size; i++){
-    	printf("%d ", sums[i]);
+
+    	for(i = 0; i < t; i++){
+	    	printf("displs[%d] = %d, scounts[%d] = %d\n", i, displs[i], i, scounts[i]);
+	    }	    
+	    printf("\n");   
+
+    	for(i = 0; i < n*a_size; i++){
+    		printf("%d ", a[i]);
     	}	
     	printf("\n");   	
     }
