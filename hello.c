@@ -2,22 +2,21 @@
 #include <mpi.h>
 #include <time.h>
 #include <stdlib.h>
-#include <assert.h>
 
 int **createMatrix(int n);
 int printMatrix(int **M, int n);
-int ***divideMatrix(int **M, int t, int n);
 int printSubmatrix(int ***m, int t, int n);
 int printArray(int *A, int n);
 int freeMatrix(int **M, int n);
-int freeSubMatrix(int ***m, int t, int n);
 int *matrixToArray(int **M, int n);
 int *computeColumnSums(int *a, int *scounts, int n, int myrank);
 
 int main(int argc, char** argv)
 {
-    int myrank, nprocs, **M, ***m, *A, *a, n, t, i, j, divs, a_size, *sums, *SUMS, *displs, *scounts;
-    int stride, *rcounts, *displs_r;
+    int myrank, nprocs, **M, *A, *a, n, t, i, divs, a_size, *sums, *SUMS;
+    int *displs, *scounts, stride, *rcounts, *displs_r;
+    clock_t start, stop;
+	double cpu_time_used;
 
     n = 8, t = 4;
     MPI_Init(NULL, NULL);
@@ -25,16 +24,9 @@ int main(int argc, char** argv)
     MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
     srand(time(NULL));
 
-
-    //create matrix
     if(myrank == 0){
-    	M = createMatrix(n);  
-
-    	printf("Matrix:\n");
-    	printMatrix(M, n);
-    
+    	M = createMatrix(n);      
     	A = matrixToArray(M, n);
-
     	freeMatrix(M, n);
     }
 	     
@@ -91,66 +83,29 @@ int main(int argc, char** argv)
     } 
 
     a = (int*)malloc(sizeof(int)*(n*a_size));
-    assert(a != NULL);
 
-    //MPI_Scatter(A, (n*divs), MPI_INT, a, (n*divs), MPI_INT, 0, MPI_COMM_WORLD);
-    MPI_Scatterv(A, scounts, displs, MPI_INT, a, (n*a_size), MPI_INT, 0, MPI_COMM_WORLD);
-
-
-    if(myrank == 1){
-    	printf("I am processor %d.\n", myrank);
-
-    	for(i = 0; i < t; i++){
-	    	printf("displs[%d] = %d, scounts[%d] = %d\n", i, displs[i], i, scounts[i]);
-	    }	    
-	    printf("\n");   
-
-	    for(i = 0; i < t; i++){
-	    	printf("displs_r[%d] = %d, rcounts[%d] = %d\n", i, displs_r[i], i, rcounts[i]);
-	    }	    
-	    printf("\n"); 
-
-    	for(i = 0; i < n*a_size; i++){
-    		printf("%d ", a[i]);
-    	}	
-    	printf("\n");   	
+    if(myrank == 0){
+    	start = clock();
     }
+
+    MPI_Scatterv(A, scounts, displs, MPI_INT, a, (n*a_size), MPI_INT, 0, MPI_COMM_WORLD);
 
     sums = computeColumnSums(a, scounts, n, myrank);
 
-    /*if(myrank == 1){
-	    for(i = 0; i < scounts[myrank] / n; i++){
-	    	printf("%d ", sums[i]);
-	    }    	
-	    printf("\n");   
-    }*/
-
-
-    /*printf("I am processor %d. :", myrank);
-    for(i = 0; i < divs; i++){
-    	printf("%d ", sums[i]);
-    }	
-    printf("\n");*/
-
     SUMS = (int*)malloc(sizeof(int)*n);
-    assert(SUMS != NULL);
 
-    //MPI_Allgather(sums, divs, MPI_INT, SUMS, divs, MPI_INT, MPI_COMM_WORLD);
     MPI_Gatherv(sums, (scounts[myrank]/n), MPI_INT, SUMS, rcounts, displs_r, MPI_INT, 0, MPI_COMM_WORLD);
 	
     if(myrank == 0){
-    	printf("\n");
-    	for(i = 0; i < n; i++){
-	    	printf("%d ", SUMS[i]);
-	    }
-	    printf("\n");
+    	stop = clock();
+    	cpu_time_used = (double)(stop - start)/(double) CLOCKS_PER_SEC;
+		printf("Time elapsed: %f \n", cpu_time_used);
 	    free(A);
     }
     free(displs);
     free(scounts);
     free(sums);
-    free(SUMS);
-	    
+    free(SUMS);	    
 
     MPI_Finalize();
 
@@ -186,38 +141,6 @@ int printMatrix(int **M, int n)
 
 	return 1;
 }
-
-/*int ***divideMatrix(int **M, int t, int n)
-{
-	int ***m, i, j, k, divs;
-
-	divs = n/t;
-
-	if(n > divs*t){
-		divs++;
-	}
-
-	m = (int***)malloc(sizeof(int**)*t);
-
-	for(i = 0; i < t; i++){
-		m[i] = (int**)malloc(sizeof(int*)*n);
-		for(j = 0; j < n; j++){
-			m[i][j] = (int*)malloc(sizeof(int)*(divs));
-		}
-	}
-
-	
-
-	for(k = 0; k < t; k++){
-		for(i = 0; i < n; i++){
-			for(j = 0; j < divs; j++){
-				m[k][i][j] = M[i][j+(k*(divs))];
-			}
-		}
-	}
-
-	return m;
-}*/
 
 int printSubmatrix(int ***m, int t, int n)
 {
@@ -266,20 +189,6 @@ int freeMatrix(int **M, int n)
 	return 1;
 }
 
-int freeSubMatrix(int ***m, int t, int n)
-{
-	int i, j;
-
-	for(i = 0; i < t; i++){
-		for(j = 0; j < n; j++){
-			free(m[i][j]);
-		}
-		free(m[i]);
-	}
-	free(m);
-
-	return 1;
-}
 
 int *matrixToArray(int **M, int n)
 {
@@ -294,35 +203,6 @@ int *matrixToArray(int **M, int n)
 
 	return A;
 }
-
-/*int *computeColumnSums(int *a, int n, int t)
-{
-	int *sums, divs, i, j, k, size;
-
-	size = sizeof(a) / sizeof(int);
-
-	divs = n/t;
-
-	if(a[size-1] != 0){
-		divs++;
-	}
-
-	sums = (int*)malloc(sizeof(int)*divs);
-
-	for(i = 0; i < divs; i++){
-		sums[i] = 0;
-	}
-
-	for(i = 0, j = 0, k = 1; i < (n*divs); i++, k++){
-		sums[j] += a[i];
-		if(k == n){
-			j++;
-			k = 0;
-		}
-	}
-
-	return sums;
-}*/
 
 int *computeColumnSums(int *a, int *scounts, int n, int myrank)
 {

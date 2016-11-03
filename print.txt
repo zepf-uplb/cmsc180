@@ -1,0 +1,82 @@
+    //int ***divideMatrix(int **M, int t, int n);
+    //int freeSubMatrix(int ***m, int t, int n);
+
+    /*if(myrank == 1){
+    	printf("I am processor %d.\n", myrank);
+
+    	for(i = 0; i < t; i++){
+	    	printf("displs[%d] = %d, scounts[%d] = %d\n", i, displs[i], i, scounts[i]);
+	    }	    
+	    printf("\n");   
+
+	    for(i = 0; i < t; i++){
+	    	printf("displs_r[%d] = %d, rcounts[%d] = %d\n", i, displs_r[i], i, rcounts[i]);
+	    }	    
+	    printf("\n"); 
+
+    	for(i = 0; i < n*a_size; i++){
+    		printf("%d ", a[i]);
+    	}	
+    	printf("\n");   	
+    }*/
+
+        /*if(myrank == 1){
+        for(i = 0; i < scounts[myrank] / n; i++){
+            printf("%d ", sums[i]);
+        }       
+        printf("\n");   
+    }*/
+
+
+    /*printf("I am processor %d. :", myrank);
+    for(i = 0; i < divs; i++){
+        printf("%d ", sums[i]);
+    }   
+    printf("\n");*/
+
+    /*int ***divideMatrix(int **M, int t, int n)
+{
+    int ***m, i, j, k, divs;
+
+    divs = n/t;
+
+    if(n > divs*t){
+        divs++;
+    }
+
+    m = (int***)malloc(sizeof(int**)*t);
+
+    for(i = 0; i < t; i++){
+        m[i] = (int**)malloc(sizeof(int*)*n);
+        for(j = 0; j < n; j++){
+            m[i][j] = (int*)malloc(sizeof(int)*(divs));
+        }
+    }
+
+    
+
+    for(k = 0; k < t; k++){
+        for(i = 0; i < n; i++){
+            for(j = 0; j < divs; j++){
+                m[k][i][j] = M[i][j+(k*(divs))];
+            }
+        }
+    }
+
+    return m;
+}*/
+
+/*int freeSubMatrix(int ***m, int t, int n)
+{
+    int i, j;
+
+    for(i = 0; i < t; i++){
+        for(j = 0; j < n; j++){
+            free(m[i][j]);
+        }
+        free(m[i]);
+    }
+    free(m);
+
+    return 1;
+}*/
