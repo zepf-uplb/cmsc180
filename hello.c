@@ -18,7 +18,7 @@ int main(int argc, char** argv)
     clock_t start, stop;
 	double cpu_time_used;
 
-    n = 8, t = 4;
+    n = 10000, t = 4;
     MPI_Init(NULL, NULL);
     MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
     MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
@@ -43,6 +43,7 @@ int main(int argc, char** argv)
     scounts = (int *)malloc(sizeof(int)*t);
     rcounts = (int *)malloc(sizeof(int)*n); 
     displs_r = (int *)malloc(sizeof(int)*n); 
+    SUMS = (int*)malloc(sizeof(int)*n);
 
     i = 0;
     displs[0] = 0;
@@ -90,9 +91,7 @@ int main(int argc, char** argv)
 
     MPI_Scatterv(A, scounts, displs, MPI_INT, a, (n*a_size), MPI_INT, 0, MPI_COMM_WORLD);
 
-    sums = computeColumnSums(a, scounts, n, myrank);
-
-    SUMS = (int*)malloc(sizeof(int)*n);
+    sums = computeColumnSums(a, scounts, n, myrank);    
 
     MPI_Gatherv(sums, (scounts[myrank]/n), MPI_INT, SUMS, rcounts, displs_r, MPI_INT, 0, MPI_COMM_WORLD);
 	
