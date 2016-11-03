@@ -12,7 +12,7 @@ int printArray(int *A, int n);
 int freeMatrix(int **M, int n);
 int freeSubMatrix(int ***m, int t, int n);
 int *matrixToArray(int **M, int n);
-int *computeColumnSums(int *a, int n, int t);
+int *computeColumnSums(int *a, int *scounts, int n, int myrank);
 
 int main(int argc, char** argv)
 {
@@ -90,7 +90,15 @@ int main(int argc, char** argv)
     	printf("\n");   	
     }
 
-    //sums = computeColumnSums(a, n, t);
+    sums = computeColumnSums(a, scounts, n, myrank);
+
+    if(myrank == 0){
+	    for(i = 0; i < scounts[myrank] / n; i++){
+	    	printf("%d ", sums[i]);
+	    }    	
+	    printf("\n");   
+    }
+
 
     /*printf("I am processor %d. :", myrank);
     for(i = 0; i < divs; i++){
@@ -259,7 +267,7 @@ int *matrixToArray(int **M, int n)
 	return A;
 }
 
-int *computeColumnSums(int *a, int n, int t)
+/*int *computeColumnSums(int *a, int n, int t)
 {
 	int *sums, divs, i, j, k, size;
 
@@ -270,6 +278,29 @@ int *computeColumnSums(int *a, int n, int t)
 	if(a[size-1] != 0){
 		divs++;
 	}
+
+	sums = (int*)malloc(sizeof(int)*divs);
+
+	for(i = 0; i < divs; i++){
+		sums[i] = 0;
+	}
+
+	for(i = 0, j = 0, k = 1; i < (n*divs); i++, k++){
+		sums[j] += a[i];
+		if(k == n){
+			j++;
+			k = 0;
+		}
+	}
+
+	return sums;
+}*/
+
+int *computeColumnSums(int *a, int *scounts, int n, int myrank)
+{
+	int i, j, k, divs, *sums;
+
+	divs = scounts[myrank] / n;
 
 	sums = (int*)malloc(sizeof(int)*divs);
 
