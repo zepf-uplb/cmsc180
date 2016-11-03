@@ -17,7 +17,7 @@ int *computeColumnSums(int *a, int *scounts, int n, int myrank);
 int main(int argc, char** argv)
 {
     int myrank, nprocs, **M, ***m, *A, *a, n, t, i, j, divs, a_size, *sums, *SUMS, *displs, *scounts;
-    int stride;
+    int stride, *rcounts, *displs_r;
 
     n = 8, t = 4;
     MPI_Init(NULL, NULL);
@@ -48,18 +48,20 @@ int main(int argc, char** argv)
 	}
 
 	displs = (int *)malloc(sizeof(int)*t); 
-    scounts = (int *)malloc(sizeof(int)*t); 
+    scounts = (int *)malloc(sizeof(int)*t);
+    rcounts = (int *)malloc(sizeof(int)*n); 
+    displs_r = (int *)malloc(sizeof(int)*n); 
 
     i = 0;
     displs[0] = 0;
     scounts[0] = 0;
 
-    for (stride = n + (n*divs); i < n%t; i++){ 
+    for(stride = n + (n*divs); i < n%t; i++){ 
         displs[i] = i*stride; 
         scounts[i] = n + (n*divs); 
     }
 
-    for(;i < t; i++){
+    for(; i < t; i++){
     	if(i != 0){
     		displs[i] = scounts[i-1] + displs[i-1]; 
     	}
@@ -68,6 +70,15 @@ int main(int argc, char** argv)
     	}	
     	scounts[i] = n*divs;
     }   
+    i = 0;
+    displs_r[0] = 0;
+    rcounts[0] = 0;
+
+    for(stride = (scounts[0]/n); i < n%t; i++){
+    	displs_r[i] = i*stride;
+    	rcounts[i] = stride;
+
+    }
 
     a = (int*)malloc(sizeof(int)*(n*a_size));
     assert(a != NULL);
@@ -84,6 +95,11 @@ int main(int argc, char** argv)
 	    }	    
 	    printf("\n");   
 
+	    for(i = 0; i < t; i++){
+	    	printf("displs_r[%d] = %d, rcounts[%d] = %d\n", i, displs_r[i], i, rcounts[i]);
+	    }	    
+	    printf("\n"); 
+
     	for(i = 0; i < n*a_size; i++){
     		printf("%d ", a[i]);
     	}	
@@ -92,12 +108,12 @@ int main(int argc, char** argv)
 
     sums = computeColumnSums(a, scounts, n, myrank);
 
-    /*if(myrank == 1){
+    if(myrank == 1){
 	    for(i = 0; i < scounts[myrank] / n; i++){
 	    	printf("%d ", sums[i]);
 	    }    	
 	    printf("\n");   
-    }*/
+    }
 
 
     /*printf("I am processor %d. :", myrank);
@@ -106,7 +122,7 @@ int main(int argc, char** argv)
     }	
     printf("\n");*/
 
-    SUMS = (int*)malloc(sizeof(int)*n);
+   /* SUMS = (int*)malloc(sizeof(int)*n);
     assert(SUMS != NULL);
 
     //MPI_Allgather(sums, divs, MPI_INT, SUMS, divs, MPI_INT, MPI_COMM_WORLD);
@@ -119,11 +135,11 @@ int main(int argc, char** argv)
 	    }
 	    printf("\n");
 	    free(A);
-    }
+    }*/
     free(displs);
     free(scounts);
     free(sums);
-    free(SUMS);
+    //free(SUMS);
 	    
 
     MPI_Finalize();
