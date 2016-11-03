@@ -52,6 +52,7 @@ int main(int argc, char** argv)
 
     i = 0;
     displs[0] = 0;
+    scounts[0] = 0;
 
     for (stride = n + (n*divs); i < n%t; i++){ 
         displs[i] = i*stride; 
@@ -60,7 +61,7 @@ int main(int argc, char** argv)
 
     for(;i < t; i++){
     	if(i != 0){
-    		displs[i] = n + displs[i-1]; 
+    		displs[i] = scounts[i-1] + displs[i-1]; 
     	}
     	else{
     		displs[i] = 0;
