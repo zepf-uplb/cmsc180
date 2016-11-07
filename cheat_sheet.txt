@@ -1,0 +1,29 @@
+http://srg.ics.uplb.edu.ph/projects/peak-two-cloud/peak-two-cloud-resources/tutorialusingslurmtorunmpijobs
+
+ssh -ouserknownhostsfile=/dev/null fcdinglasan@10.0.3.234
+ssh -ouserknownhostsfile=/dev/null fcdinglasan@10.0.3.228
+
+https://github.com/zepf-uplb/cmsc180.git
+
+sudo apt install lam4-dev
+
+mpicc -o p1.exe p1.c
+sbatch submit.sh ./p1.exe
+cat output.txt
+
+if(my_rank == 0){
+	create_matrix
+	get start_time
+	do one-to-many personalized broadcast (sender)
+}
+else if(my_rank != 0){
+	do one-to-many personalized broadcast (receiver)
+}
+do col sum
+if(my_rank == 0){
+	do many-to-one personalized broadcast (receiver)
+	get end_time
+}
+else if(my_rank != 0){
+	do many-to-one personalized broadcast (sender)
+}
