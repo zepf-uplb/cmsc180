@@ -11,6 +11,9 @@ mpicc -o p1.exe p1.c
 sbatch submit.sh ./p1.exe
 cat output.txt
 
+mpicc -o p1.exe p1.c
+mpiexec -n 1 ./p1.exe
+
 if(my_rank == 0){
 	create_matrix
 	get start_time

@@ -80,3 +80,137 @@
 
     return 1;
 }*/
+
+
+
+/*if(myrank == 0){
+        printf("I am processor %d.\n", myrank);
+
+        for(i = 0; i < t; i++){
+            printf("displs[%d] = %d, scounts[%d] = %d\n", i, displs[i], i, scounts[i]);
+        }       
+        printf("\n");   
+
+        for(i = 0; i < t; i++){
+            printf("displs_r[%d] = %d, rcounts[%d] = %d\n", i, displs_r[i], i, rcounts[i]);
+        }       
+        printf("\n");
+        for(i = 0; i < a_size; i++){
+            printf("v[%d] = %d\n", i, v[i]);
+        }
+        printf("\n");   
+        for(i = 0; i < n*a_size; i++){
+            printf("a[%d] = %d\n", i, a[i]);
+        }
+        printf("\n");           
+    }
+    if(myrank == 0){
+        free(A);
+        A = (int*)malloc(sizeof(int)*(n*n));
+    }*/
+
+
+
+        /*if(myrank == 0){
+        printf("I am processor %d.\n", myrank);
+
+        for(i = 0; i < t; i++){
+            printf("displs[%d] = %d, scounts[%d] = %d\n", i, displs[i], i, scounts[i]);
+        }       
+        printf("\n");   
+
+        for(i = 0; i < t; i++){
+            printf("displs_r[%d] = %d, rcounts[%d] = %d\n", i, displs_r[i], i, rcounts[i]);
+        }       
+        printf("\n");
+        for(i = 0; i < a_size; i++){
+            printf("V[%d] = %d\n", i, V[i]);
+        }
+        printf("\n");          
+    }*/
+
+    /*for(i = 0; i < n; i++){
+            printf("answerVector[%d] = %d\n", i, answerVector[i]);
+        }*/
+
+
+/*printf("WORLD RANK/SIZE: %d/%d \t ROW RANK/SIZE: %d/%d\n",
+    rank, size, newRank, newSize);*/
+
+
+    /*printf("Global array is:\n");
+        for (i=0; i<n; i++) {
+            for (j=0; j<n; j++) {
+                printf("%2d ", global[i][j]);
+            }
+            printf("\n");
+        }
+        printf("Global vector is:\n");
+        for (i=0; i<n; i++) {
+            printf("%d ", V[i]);
+        }
+        printf("\n");*/
+
+
+    /* now all processors print their local data: */
+
+    /*for (p=0; p<size; p++) {
+        if (rank == p) {
+            printf("Local process on rank %d is:\n", rank);
+            for (i=0; i<n/grid; i++) {
+                putchar('|');
+                for (j=0; j<n/grid; j++) {
+                    printf("%2d ", local[i][j]);
+                }
+                printf("|\n");
+            }
+        }
+        MPI_Barrier(MPI_COMM_WORLD);
+    }*/
+
+
+        /*for (p=0; p<size; p++) {
+        if (rank == p) {
+            printf("sum on rank %d is:\n", rank);
+            for (i=0; i<n/2; i++) {
+                printf("%d ", sum[i]);
+            }
+            printf("\n");
+        }
+        MPI_Barrier(MPI_COMM_WORLD);
+    }*/
+
+
+    /*if(rank == 0 || rank == 2){
+        printf("SUM:\n");
+        for(i = 0; i < n/2; i++){
+            printf("%d ", SUM[i]);
+        } 
+        printf("\n");
+    } */   
+
+
+
+    /*if(rank == 0){
+        printf("PRODUCT:\n");
+        for(i = 0; i < n; i++){
+            printf("%d ", PRODUCT[i]);
+        }
+        printf("\n");
+    }*/        
+
+
+
+    //if(myrank == 0)
+            //printf("C[%d] = %d, a[%d] = %d, B[%d] = %d\n", i, C[i], j, a[j], l, B[l]);
+
+
+
+
+
+            /*if(myrank == 0){
+        for(i = 0; i < scounts[myrank]; i++){
+            printf("%d ", C[i]);
+        }
+        printf("\n");
+    }*/
